@@ -15,9 +15,10 @@ closeElemSpase.addEventListener('click', () => {
     menu.classList.remove('active');
 });
 
+
 const counters = document.querySelectorAll('.skills__ratings-counter'),
       lines = document.querySelectorAll('.skills__ratings-line span');
-
+      
 counters.forEach( (item, i) => {
     lines[i].style.width = item.innerHTML;
 });
@@ -57,55 +58,76 @@ for (let smoothLink of smoothLinks) {
 };
 
 
-  function serializeForm(formNode) {
-    console.log(formNode.elements)
-  }
-  
-  function handleFormSubmit(event) {
-    event.preventDefault()
-    serializeForm(applicantForm)
-  }
-  
-  const applicantForm = document.getElementById('mars-once')
-  applicantForm.addEventListener('submit', handleFormSubmit)
 
-  function serializeForm(formNode) {
-    const { elements } = formNode
-  
-    Array.from(elements)
-      .forEach((element) => {
-        const { name, value } = element
-        console.log({ name, value })
-      })
-  }
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('form');
+  form.addEventListener('submit', formSend);
 
-  function serializeForm(formNode) {
-    const { elements } = formNode
-    const data = Array.from(elements)
-      .filter((item) => !!item.name)
-      .map((element) => {
-        const { name, value } = element
-  
-        return { name, value }
-      })
-  
-    console.log(data)
-  }
+    async function formSend(e) {
+      e.preventDefault();
 
-  function serializeForm(formNode) {
-    return new FormData(formNode)
-  }
+      let error = formValidate(form);
 
-  async function sendData(data) {
-    return await fetch('mailer/smart.php', {
-      method: 'POST',
-      headers: { 'Content-Type': 'multipart/form-data' },
-      body: data,
-    })
-  }
-  async function handleFormSubmit(event) {
-    event.preventDefault()
-  
-    const data = serializeForm(event.target)
-    const response = await sendData(data)
-  }
+      let formData = new FormData(form);
+
+      if (error===0) {
+        form.classList.add('_sending');
+        let response = await fetch('sendmail.php', {
+          method:'POST',
+          body: formData
+        });
+        if (response.ok) {
+          let result = await response.json();
+          alert(result.message);
+          formPreview.innerHTML = '';
+          form.reset();
+        } else {
+          alert("Ошибка");
+          form.classList.remove('_sending');
+        }
+
+      } else {
+        alert('Заполните обязательные поля');
+      }
+
+    }
+
+    function formValidate(form) {
+      let error = 0;
+      let formReq = document.querySelectorAll('_req');
+      for (let index = 0; index < formReq.length; index++) {
+        const input = formReq[index];
+        formRemoveError(input);
+
+        if (input.classList.contains('_email')){
+          if (emailTest(input)) {
+            formAddError(input);
+            error++;
+          }
+        } else if (input.getAttribute("type") === "checkbox" && input.checked === false){
+          formAddError(input);
+          error++;
+        } else {
+          if (input.value === '') {
+            formAddError(input);
+            error++;
+          }
+        }
+      }
+      return error;
+    }
+
+    function formAddError(input) {
+      input.parentElement.classList.add('_error');
+      input.classList.add('_error');
+    }
+    function formRemoveError(input) {
+      input.parentElement.classList.remove('_error');
+      input.classList.remove('_error');
+    }
+
+    function emailTest(input) {
+      return !/^w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,8})+$/.test(input.value);
+    }
+
+});
