@@ -63,34 +63,34 @@ document.addEventListener('DOMContentLoaded', function() {
   const form = document.getElementById('form');
   form.addEventListener('submit', formSend);
 
-    async function formSend(e) {
-      e.preventDefault();
+    // async function formSend(e) {
+    //   e.preventDefault();
 
-      let error = formValidate(form);
+    //   let error = formValidate(form);
 
-      let formData = new FormData(form);
+    //   let formData = new FormData(form);
 
-      if (error===0) {
-        form.classList.add('_sending');
-        let response = await fetch('sendmail.php', {
-          method:'POST',
-          body: formData
-        });
-        if (response.ok) {
-          let result = await response.json();
-          alert(result.message);
-          formPreview.innerHTML = '';
-          form.reset();
-        } else {
-          alert("Ошибка");
-          form.classList.remove('_sending');
-        }
+    //   if (error===0) {
+    //     form.classList.add('_sending');
+    //     let response = await fetch('sendmail.php', {
+    //       method:'POST',
+    //       body: formData
+    //     });
+    //     if (response.ok) {
+    //       let result = await response.json();
+    //       alert(result.message);
+    //       formPreview.innerHTML = '';
+    //       form.reset();
+    //     } else {
+    //       alert("Ошибка");
+    //       form.classList.remove('_sending');
+    //     }
 
-      } else {
-        alert('Заполните обязательные поля');
-      }
+    //   } else {
+    //     alert('Заполните обязательные поля');
+    //   }
 
-    }
+    // }
 
     function formValidate(form) {
       let error = 0;
@@ -131,3 +131,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+!function(exports) {
+  exports.submitGoogleForm = submitGoogleForm;
+
+  function submitGoogleForm(form) {
+    try {
+      var data = [].slice.call(form).map(function(control) {
+        return 'value' in control && control.name ?
+          control.name + '=' + (control.value === undefined ? '' : control.value) :
+          '';
+      }).join('&');
+      var xhr = new XMLHttpRequest();
+
+      xhr.open('POST', form.action + '/formResponse', true);
+      xhr.setRequestHeader('Accept',
+          'application/xml, text/xml, */*; q=0.01');
+      xhr.setRequestHeader('Content-type',
+          'application/x-www-form-urlencoded; charset=UTF-8');
+      xhr.send(data);
+    } catch(e) {}
+
+    form.parentNode.className += ' submitted';
+
+    return false;
+  }
+}(typeof module === 'undefined' ? window : module.exports);
