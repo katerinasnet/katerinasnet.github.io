@@ -75,15 +75,15 @@ for (let smoothLink of smoothLinks) {
 
 
 
-const scriptURL = '<https://script.google.com/macros/s/AKfycbwzxwcYF1TlJfmCUlDXG0D7wsQiCDbR6NFj9po6vckPSMiXxug7i0t5iLR-tc4cKsJ2/exec>'
-const form = document.forms['Form']
+// const scriptURL = '<https://script.google.com/macros/s/AKfycbwzxwcYF1TlJfmCUlDXG0D7wsQiCDbR6NFj9po6vckPSMiXxug7i0t5iLR-tc4cKsJ2/exec>'
+// const form = document.forms['Form']
 
-form.addEventListener('submit', e => {
-  e.preventDefault()
-  fetch(scriptURL, { method: 'POST', body: new FormData(form)})
-    .then(response => console.log('Success!', response))
-    .catch(error => console.error('Error!', error.message))
-})
+// form.addEventListener('submit', e => {
+//   e.preventDefault()
+//   fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+//     .then(response => console.log('Success!', response))
+//     .catch(error => console.error('Error!', error.message))
+// })
 
 // document.addEventListener('DOMContentLoaded', function() {
 //   const form = document.getElementById('form');
